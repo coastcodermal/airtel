@@ -17,44 +17,55 @@ import dayjs from 'dayjs';
 import { useSelection } from '@/hooks/use-selection';
 import type { CustomerType } from '@/types/customer';
 
-
 function noop(): void {
   // do nothing
 }
 
-export interface Customer {
-  id: string;
-  avatar: string;
-  name: string;
-  email: string;
-  address: { city: string; state: string; country: string; street: string };
-  phone: string;
-  createdAt: Date;
-}
+export function CustomersTable(): React.JSX.Element {
+  const page = 0;
+  const rowsPerPage = 5;
+  const [rows, setRows] = React.useState<CustomerType[]>([]);
+  const [loading, setLoading] = React.useState(true);
 
-interface CustomersTableProps {
-  count?: number;
-  page?: number;
-  rows?: CustomerType[] | [];
-  rowsPerPage?: number;
-}
-
-export function CustomersTable({
-  count = 0,
-  rows = [],
-  page = 0,
-  rowsPerPage = 0,
-}: CustomersTableProps): React.JSX.Element {
   const rowIds = React.useMemo(() => {
     return rows.map((customer) => customer.id);
   }, [rows]);
-  console.log(rows)
 
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
 
   const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
-  const selectedAll = rows.length > 0 && selected?.size === rows.length;
-  
+  const selectedAll = rows.length > 0 && (selected?.size ?? 0) === rows.length;
+
+  React.useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch('http://localhost:3000/api/customers', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (response.status === 200) {
+          const data: CustomerType[] = await response.json();
+          const paginatedCustomers = Array.isArray(data) ? applyPagination(data, page, rowsPerPage) : [];
+          setRows(paginatedCustomers);
+        } else {
+          console.error('Error fetching data:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -75,7 +86,7 @@ export function CustomersTable({
                 />
               </TableCell>
               <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
+              <TableCell>Account</TableCell>
               <TableCell>Location</TableCell>
               <TableCell>Phone</TableCell>
               <TableCell>Signed Up</TableCell>
@@ -84,7 +95,7 @@ export function CustomersTable({
           </TableHead>
           <TableBody>
             {rows.map((row) => {
-              const isSelected = selected?.has(row.id);
+              const isSelected = selected?.has(row.id) ?? false;
 
               return (
                 <TableRow hover key={row.id} selected={isSelected}>
@@ -105,13 +116,13 @@ export function CustomersTable({
                       <Typography variant="subtitle2">{row.name}</Typography>
                     </Stack>
                   </TableCell>
-                  <TableCell>{row.email}</TableCell>
+                  <TableCell>{row.routers.account_no}</TableCell>
                   <TableCell>
-                    {row.address.city}, {row.address.location}, Kenya
+                    {row.city}, {row.town}, Kenya
                   </TableCell>
                   <TableCell>{row.phone}</TableCell>
-                  <TableCell>{dayjs(row.date_of_sub).format('MMM D, YYYY')}</TableCell>
-                  <TableCell>{dayjs(row.expiry_date).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{dayjs(row.subscriprion_date).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{dayjs(row.expiry).format('MMM D, YYYY')}</TableCell>
                 </TableRow>
               );
             })}
@@ -121,7 +132,7 @@ export function CustomersTable({
       <Divider />
       <TablePagination
         component="div"
-        count={count}
+        count={rows.length}
         onPageChange={noop}
         onRowsPerPageChange={noop}
         page={page}
@@ -130,4 +141,8 @@ export function CustomersTable({
       />
     </Card>
   );
+}
+
+function applyPagination(rows: CustomerType[], page: number, rowsPerPage: number): CustomerType[] {
+  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 }

@@ -16,42 +16,30 @@ import { Sales } from '@/components/dashboard/overview/sales';
 import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
 import { Traffic } from '@/components/dashboard/overview/traffic';
-import type { CustomerType } from '@/types/customer';
+import { createClient } from '@/utils/supabase/sever';
 
 export const metadata = { title: `Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 
 export default async function Page(): Promise<React.JSX.Element> {
-  const page = 0;
-  const rowsPerPage = 5;
-
-  async function fetchData(): Promise<CustomerType[]> {
-    try {
-      const response = await fetch('http://localhost:3000/api/customers', {
-        method: 'GET',
-        headers: {
-          'Content-type': 'application/json'
-        }
-      });
-      if (response.status === 200) {
-        const data: CustomerType[] = await response.json();
-        return data;
-      }
-      console.error('Error fetching data:', response.status);
-      return [];
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      return [];
+  const getTotalCustomers = async () => {
+    const supabase = createClient();
+    const { count, error } = await supabase
+      .from('customers')
+      .select('*', { count: 'exact' });
+    if (error) {
+      console.error('Error fetching total customers:', error);
+      return null;
     }
+    console.log(count)
+    return count;
   }
-  const data = await fetchData();  
-  const paginatedCustomers = Array.isArray(data) ? applyPagination(data, page, rowsPerPage) : [];
-  
 
+  const value = await getTotalCustomers();
   return (
     <Grid container spacing={3}>
       <Grid lg={4} sm={6} xs={12}>
-        <Budget diff={12} trend="up" sx={{ height: '100%' }} value="30" />
+        <Budget diff={12} trend="up" sx={{ height: '100%' }} value={value}/>
       </Grid>
       <Grid lg={4} sm={6} xs={12}>
         <TasksProgress sx={{ height: '100%' }} value={75.5} />
@@ -81,10 +69,6 @@ export default async function Page(): Promise<React.JSX.Element> {
       </Stack>
       <CustomersFilters />
       <CustomersTable
-        count={paginatedCustomers.length}
-        page={page}
-        rows={paginatedCustomers}
-        rowsPerPage={rowsPerPage}
       />
     </Stack>
       </Grid>
@@ -99,7 +83,7 @@ export default async function Page(): Promise<React.JSX.Element> {
         />
       </Grid>
       <Grid lg={4} md={6} xs={12}>
-        <Traffic chartSeries={[63, 15, 22]} labels={['Cows', 'Bulls', 'Calves']} sx={{ height: '100%' }} />
+        <Traffic chartSeries={[15, 22]} labels={['Subscribed', 'Sleeping']} sx={{ height: '100%' }} />
       </Grid>
       
       
@@ -108,6 +92,4 @@ export default async function Page(): Promise<React.JSX.Element> {
   );
 }
 
-function applyPagination(rows: CustomerType[], page: number, rowsPerPage: number): CustomerType[] {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-}
+

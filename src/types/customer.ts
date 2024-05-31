@@ -1,17 +1,21 @@
 export interface CustomerType {
     id: string;
+    created_at: string;
     name: string;
     phone: string;
     email: string;
-    address: {
-      city: string;
-      location?: string;
-    };
-    account_no: string;
+    city: string;
+    town?: string;
     router_mobile_no: string;
-    package: string;
-    date_of_sub: string;
-    expiry_date: string;
-    serial_no: string;
+    package: number;
+    subscriprion_date: string;
+    expiry: string;
+    routers: {
+      id: number;
+      router_mobile_no: string;
+      account_no:string;
+      serial_no: string;
+    }
   }
+
   

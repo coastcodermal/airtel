@@ -1,15 +1,36 @@
-import type { CustomerType } from '@/types/customer';
-import fs from 'node:fs';
+import { createClient } from "@/utils/supabase/sever";
 
-const CUSTOMERS_FILE_PATH = './data/customers.json';
 
-export async function GET(): Promise<Response> {
-    const customersData = fs.readFileSync(CUSTOMERS_FILE_PATH, 'utf8');
-    const customers: { customers: CustomerType[]} = await JSON.parse(customersData)
-    if (!customers) {
-        console.log(customers)
-        return Response.json({ message: 'Error , Data not found' }, { status: 500 })  
+export const GET = async () => {
+  const supabase = createClient();
+
+  try {
+    const { data, error } = await supabase.from('customers').select(`
+      id,
+      created_at,
+      name,
+      phone,
+      email,
+      city,
+      town,
+      package,
+      subscription_date,
+      expiry,
+      routers (
+        id,
+        router_mobile_no,
+        account_no,
+        serial_no
+      )
+    `);
+    if (error) {
+        console.log(error)
+        
+        return Response.json({ error: 'Internal server error' },{status:500});
     }
-    
-    return Response.json({ customers }, { status: 200 })
-}
+    return Response.json(data,{status: 200});
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return Response.json({ error: 'Internal server error' },{status:500});
+  }
+};
