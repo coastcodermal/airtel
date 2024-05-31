@@ -1,0 +1,82 @@
+[
+    {
+      "id": "1",
+      "name": "Customer 1",
+      "phone": "1234567890",
+      "email": "customer1@example.com",
+      "address": {
+        "city": "City 1",
+        "location": "Location 1"
+      },
+      "account_no": "123456",
+      "router_mobile_no": "9876543210",
+      "package": "Package 1",
+      "date_of_sub": "2022-01-01",
+      "expiry_date": "2023-01-01",
+      "serial_no": "SN1"
+    },
+    {
+      "id": "2",
+      "name": "Customer 2",
+      "phone": "2345678901",
+      "email": "customer2@example.com",
+      "address": {
+        "city": "City 2",
+        "location": "Location 2"
+      },
+      "account_no": "234567",
+      "router_mobile_no": "8765432109",
+      "package": "Package 2",
+      "date_of_sub": "2022-02-02",
+      "expiry_date": "2023-02-02",
+      "serial_no": "SN2"
+    },
+    {
+      "id": "3",
+      "name": "Customer 3",
+      "phone": "3456789012",
+      "email": "customer3@example.com",
+      "address": {
+        "city": "City 3",
+        "location": "Location 3"
+      },
+      "account_no": "345678",
+      "router_mobile_no": "7654321098",
+      "package": "Package 3",
+      "date_of_sub": "2022-03-03",
+      "expiry_date": "2023-03-03",
+      "serial_no": "SN3"
+    },
+    {
+      "id": "4",
+      "name": "Customer 4",
+      "phone": "4567890123",
+      "email": "customer4@example.com",
+      "address": {
+        "city": "City 4",
+        "location": "Location 4"
+      },
+      "account_no": "456789",
+      "router_mobile_no": "6543210987",
+      "package": "Package 4",
+      "date_of_sub": "2022-04-04",
+      "expiry_date": "2023-04-04",
+      "serial_no": "SN4"
+    },
+    {
+      "id": "5",
+      "name": "Customer 5",
+      "phone": "5678901234",
+      "email": "customer5@example.com",
+      "address": {
+        "city": "City 5",
+        "location": "Location 5"
+      },
+      "account_no": "567890",
+      "router_mobile_no": "5432109876",
+      "package": "Package 5",
+      "date_of_sub": "2022-05-05",
+      "expiry_date": "2023-05-05",
+      "serial_no": "SN5"
+    }
+  ]
