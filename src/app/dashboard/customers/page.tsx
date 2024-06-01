@@ -16,24 +16,18 @@ import { Sales } from '@/components/dashboard/overview/sales';
 import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
 import { Traffic } from '@/components/dashboard/overview/traffic';
-import { createClient } from '@/utils/supabase/sever';
+import { checkShowModal, getTotalCustomers } from '@/utils/helper';
+import { CustomersModal } from '@/components/dashboard/customer/modal';
 
 export const metadata = { title: `Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
+interface PageProps {
+  searchParams?: Record<string, string> | null | undefined;
+}
 
-export default async function Page(): Promise<React.JSX.Element> {
-  const getTotalCustomers = async () => {
-    const supabase = createClient();
-    const { count, error } = await supabase
-      .from('customers')
-      .select('*', { count: 'exact' });
-    if (error) {
-      console.error('Error fetching total customers:', error);
-      return null;
-    }
-    console.log(count)
-    return count;
-  }
+export default async function Page({searchParams}: PageProps): Promise<React.JSX.Element> {
+
+  const showModal = searchParams? checkShowModal(searchParams) : false;
 
   const value = await getTotalCustomers();
   return (
@@ -62,7 +56,7 @@ export default async function Page(): Promise<React.JSX.Element> {
           </Stack>
         </Stack>
         <div>
-          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="contained">
+          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="contained" href='/dashboard/customers/?modal=true'>
             Add
           </Button>
         </div>
@@ -85,6 +79,8 @@ export default async function Page(): Promise<React.JSX.Element> {
       <Grid lg={4} md={6} xs={12}>
         <Traffic chartSeries={[15, 22]} labels={['Subscribed', 'Sleeping']} sx={{ height: '100%' }} />
       </Grid>
+
+      {showModal ? <CustomersModal open={showModal} /> : null}
       
       
     </Grid>
