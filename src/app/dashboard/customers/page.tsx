@@ -1,13 +1,11 @@
+// Importing necessary libraries and components
 import * as React from 'react';
 import type { Metadata } from 'next';
-import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
-import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Download';
-import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 
+
+// Importing local components and utilities
 import { config } from '@/config';
 import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
 import { CustomersTable } from '@/components/dashboard/customer/customers-table';
@@ -19,17 +17,24 @@ import { Traffic } from '@/components/dashboard/overview/traffic';
 import { checkShowModal, getTotalCustomers } from '@/utils/helper';
 import { CustomersModal } from '@/components/dashboard/customer/modal';
 
+// Setting up metadata for the page
 export const metadata = { title: `Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
+// Defining props for the page
 interface PageProps {
   searchParams?: Record<string, string> | null | undefined;
 }
 
+// Main page component
 export default async function Page({searchParams}: PageProps): Promise<React.JSX.Element> {
 
+    // Determine if modal should be shown based on search parameters
   const showModal = searchParams? checkShowModal(searchParams) : false;
 
+    // Fetch total customers
   const value = await getTotalCustomers();
+
+    // Render the page
   return (
     <Grid container spacing={3}>
       <Grid lg={4} sm={6} xs={12}>
@@ -43,30 +48,10 @@ export default async function Page({searchParams}: PageProps): Promise<React.JSX
       </Grid>
       <Grid lg={12} sm={12} xs={12}>
       <Stack>
-      <Stack direction="row" spacing={3}>
-        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Customer Records</Typography>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
-              Import
-            </Button>
-            <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
-              Export
-            </Button>
-          </Stack>
-        </Stack>
-        <div>
-          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="contained" href='/dashboard/customers/?modal=true'>
-            Add
-          </Button>
-        </div>
+        <CustomersFilters />
+        <CustomersTable/>
       </Stack>
-      <CustomersFilters />
-      <CustomersTable
-      />
-    </Stack>
       </Grid>
-      
       <Grid lg={8} xs={12}>
         <Sales
           chartSeries={[

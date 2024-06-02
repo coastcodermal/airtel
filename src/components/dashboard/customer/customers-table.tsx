@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 import { useSelection } from '@/hooks/use-selection';
 import type { CustomerType } from '@/types/customer';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function noop(): void {
   // do nothing
@@ -39,7 +40,7 @@ export function CustomersTable(): React.JSX.Element {
   React.useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('http://localhost:3000/api/customers', {
+        const response = await fetch('/api/customers', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -63,7 +64,14 @@ export function CustomersTable(): React.JSX.Element {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+    >
+      <CircularProgress />
+    </Box>;
   }
 
   return (

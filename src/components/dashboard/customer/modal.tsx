@@ -1,57 +1,61 @@
+'use client';
 import * as React from 'react';
 import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import TextField from '@mui/material/TextField';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
+import { type FormValues } from '@/types/FormValue';
+import { CustomerForm } from './customers-form';
+import { RouterForm } from './router-select-form';
 
 interface ModalProps {
   open: boolean;
-}
-export function CustomersModal({open}: ModalProps): React.JSX.Element {
-  return (
-    <Dialog open={open}>
-        <DialogTitle>Add Customer</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To add a new customer, please enter the customers name, email address, and phone number here.
-          </DialogContentText>
-          <TextField
-            margin="dense"
-            name="name"
-            label="Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            
-            
-          />
-          <TextField
-            margin="dense"
-            name="email"
-            label="Email Address"
-            type="email"
-            fullWidth
-            variant="standard"
-            
-          />
-          <TextField
-            margin="dense"
-            name="phone"
-            label="Phone Number"
-            type="text"
-            fullWidth
-            variant="standard"
-            
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button href='/dashboard/customers/?modal=false'>Cancel</Button>
-          {/* <Button onClick={handleSubmit}>Add</Button> */}
-        </DialogActions>
-      </Dialog>
-  );
+  close?: () => void;
 }
 
+export function CustomersModal({ open, close }: ModalProps): React.JSX.Element {
+  const [isCustomerFormSubmitted, setCustomerFormSubmitted] = React.useState(false);
+  const [values, setValues] = React.useState<FormValues>({
+    name: '',
+    phone: '',
+    email: '',
+    city: '',
+    package: '',
+    subscription_date: null,
+    expiry: '',
+    routerId: '',
+  });
+
+  const handleCustomerSubmit = (data: FormValues) => {
+    console.log(data);
+    setValues(data);
+    setCustomerFormSubmitted(true);
+  };
+  const handleRouterSubmit = (data: FormValues) => {
+    console.log(data);
+    // post form data to /api/customers
+    fetch('/api/customers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }).then((response) => {
+      if (response.status === 200) {
+        if (close) close();
+      }
+    })
+    .catch((error: unknown) => {
+      console.error('Error fetching data:', error);
+    });
+  };
+
+  return (
+    <Dialog open={open} fullWidth maxWidth="sm">
+      <DialogTitle>Add Customer</DialogTitle>
+      {!isCustomerFormSubmitted ? (
+        <CustomerForm onSubmit={handleCustomerSubmit} />
+      ) : (
+        <RouterForm onSubmit={handleRouterSubmit} values={values} />
+      )}
+    </Dialog>
+  );
+}
