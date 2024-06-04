@@ -6,3 +6,4 @@ export interface RouterType {
     in_store: boolean;
     created_at: string;   
 }
+

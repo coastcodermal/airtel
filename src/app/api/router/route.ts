@@ -1,20 +1,20 @@
 import { createClient } from "@/utils/supabase/sever";
 
 
-export const GET = async (request: Request) => {
-    const supabase = createClient();
-    // Search Params
-    const {searchParams} = new URL(request.url);
-    const searchValue = searchParams.get("search");
+// export const GET = async (request: Request) => {
+//     const supabase = createClient();
+//     // Search Params
+//     const {searchParams} = new URL(request.url);
+//     const searchValue = searchParams.get("search");
 
-    if (searchValue) {
-        const { data, error } = await supabase.from('routers').select('*').eq('serial_no', searchValue);
-        if (error) {
-            return Response.json({ error: 'Internal server error' }, { status: 500 });
-        }
-        return Response.json(data, { status: 200 });
-    }
-};
+//     if (searchValue) {
+//         const { data, error } = await supabase.from('routers').select('*').eq('serial_no', searchValue);
+//         if (error) {
+//             return Response.json({ error: 'Internal server error' }, { status: 500 });
+//         }
+//         return Response.json(data, { status: 200 });
+//     }
+// };
 
 // export const POST = async (data: any) => {
 //     const supabase = createClient();
@@ -26,3 +26,13 @@ export const GET = async (request: Request) => {
 //     return Response.json(routerData, { status: 200 });
 // }
 
+export const GET = async () => {
+    const supabase = createClient();
+    // Search Params
+    const { data, error } = await supabase.from('routers').select('*');
+    if (error) {
+        return Response.json({ error: 'Internal server error' }, { status: 500 });
+    }
+    return Response.json(data, { status: 200 });
+    
+};
