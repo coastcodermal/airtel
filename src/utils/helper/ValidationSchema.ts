@@ -9,5 +9,5 @@ export const validationSchema: yup.Schema<FormValues> = yup.object({
   package: yup.string().required('Package is required'),
   subscription_date: yup.date().required('Subscription date is required').nullable(),
   expiry: yup.string().default(''),
-  routerId: yup.string().default(''),
+  router: yup.string().default(''),
 });

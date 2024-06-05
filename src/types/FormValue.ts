@@ -7,5 +7,5 @@ export interface FormValues {
     package: string;
     subscription_date: Date | null;
     expiry: string;
-    routerId: string;
+    router: string;
   }
