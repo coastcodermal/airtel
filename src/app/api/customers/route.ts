@@ -34,3 +34,14 @@ export const GET = async () => {
     return Response.json({ error: 'Internal server error' },{status:500});
   }
 };
+
+export const POST = async (request:Request) => {
+  const supabase = createClient();
+  const data = await request.json();
+  const { data: customerData, error } = await supabase.from('customers').insert(data);
+  if (error) {
+    console.log(error)
+    return Response.json({ error: 'Internal server error' },{status:500});
+  }
+  return Response.json(customerData,{status: 200});
+}

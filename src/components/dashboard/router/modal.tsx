@@ -3,9 +3,8 @@ import * as React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import { type FormValues } from '@/types/FormValue';
-import { CustomerForm } from './customers-form';
+import { CustomerForm } from './routers-form';
 import { RouterForm } from './router-select-form';
-import dayjs from 'dayjs';
 
 interface ModalProps {
   open: boolean;
@@ -31,25 +30,21 @@ export function CustomersModal({ open, close }: ModalProps): React.JSX.Element {
     setCustomerFormSubmitted(true);
   };
   const handleRouterSubmit = (data: FormValues) => {
-
-    // Convert subscription_date to ISO 8601 format
-    const subscription_date = dayjs(data.subscription_date).toISOString();
-
-    // Calculate expiry date to be 30 days from subscription_date
-    const expiry = dayjs(subscription_date).add(30, 'day').toISOString();
-    const customerData = { ...values, ...data, subscription_date, expiry };
-
+    console.log(data);
     // post form data to /api/customers
     fetch('/api/customers', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(customerData),
+      body: JSON.stringify(data),
     }).then((response) => {
       if (response.status === 200) {
         if (close) close();
       }
+    })
+    .catch((error: unknown) => {
+      console.error('Error fetching data:', error);
     });
   };
 

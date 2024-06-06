@@ -15,17 +15,13 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 import { useSelection } from '@/hooks/use-selection';
-import type { CustomerType } from '@/types/customer';
 import CircularProgress from '@mui/material/CircularProgress';
+import {type RouterType } from '@/types/router';
 
-function noop(): void {
-  // do nothing
-}
-
-export function CustomersTable(): React.JSX.Element {
-  const page = 0;
-  const rowsPerPage = 5;
-  const [rows, setRows] = React.useState<CustomerType[]>([]);
+export function RoutersTable(): React.JSX.Element {
+  const [page , setPage] = React.useState(0); 
+  const [rowsPerPage, setRowsPerPage] = React.useState(5); // [1, 5, 10, 25
+  const [rows, setRows] = React.useState<RouterType[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   const rowIds = React.useMemo(() => {
@@ -40,14 +36,14 @@ export function CustomersTable(): React.JSX.Element {
   React.useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('/api/customers', {
+        const response = await fetch('/api/router', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
           }
         });
         if (response.status === 200) {
-          const data: CustomerType[] = await response.json();
+          const data: RouterType[] = await response.json();
           const paginatedCustomers = Array.isArray(data) ? applyPagination(data, page, rowsPerPage) : [];
           setRows(paginatedCustomers);
         } else {
@@ -61,7 +57,7 @@ export function CustomersTable(): React.JSX.Element {
     }
 
     fetchData();
-  }, []);
+  }, [page, rowsPerPage]);
 
   if (loading) {
     return <Box
@@ -93,12 +89,10 @@ export function CustomersTable(): React.JSX.Element {
                   }}
                 />
               </TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Account</TableCell>
-              <TableCell>Location</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Signed Up</TableCell>
-              <TableCell>Expiry</TableCell>
+              <TableCell>Mobile No</TableCell>
+              <TableCell>Serial Number</TableCell>
+              <TableCell>In Store</TableCell>
+              <TableCell>Dated Added</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -121,16 +115,22 @@ export function CustomersTable(): React.JSX.Element {
                   </TableCell>
                   <TableCell>
                     <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                      <Typography variant="subtitle2">{row.name}</Typography>
+                      <Typography variant="subtitle2">{row.router_mobile_no}</Typography>
                     </Stack>
                   </TableCell>
-                  <TableCell>{row.routers.account_no}</TableCell>
+                  <TableCell>{row.serial_no}</TableCell>
                   <TableCell>
-                    {row.city}, {row.town}, Kenya
+                    {row.in_store ? (
+                      <Typography variant="subtitle2" color="success">
+                        Yes
+                      </Typography>
+                    ) : (
+                      <Typography variant="subtitle2" color="error">
+                        No
+                      </Typography>
+                    )}
                   </TableCell>
-                  <TableCell>{row.phone}</TableCell>
-                  <TableCell>{dayjs(row.subscriprion_date).format('MMM D, YYYY')}</TableCell>
-                  <TableCell>{dayjs(row.expiry).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{dayjs(row.created_at).format('MMM D, YYYY')}</TableCell>
                 </TableRow>
               );
             })}
@@ -141,8 +141,10 @@ export function CustomersTable(): React.JSX.Element {
       <TablePagination
         component="div"
         count={rows.length}
-        onPageChange={noop}
-        onRowsPerPageChange={noop}
+        onPageChange={(event, newPage) => { setPage(newPage); }}
+        onRowsPerPageChange={(event) => {setRowsPerPage(parseInt(event.target.value, 10));
+          setPage(0);
+        }}
         page={page}
         rowsPerPage={rowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
@@ -151,6 +153,6 @@ export function CustomersTable(): React.JSX.Element {
   );
 }
 
-function applyPagination(rows: CustomerType[], page: number, rowsPerPage: number): CustomerType[] {
+function applyPagination(rows: RouterType[], page: number, rowsPerPage: number): RouterType[] {
   return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 }
